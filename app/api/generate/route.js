@@ -21,15 +21,17 @@ Return in the following JSON format
 {
     "flashcards":[
         {
-            "front": str,
-            "back": str
+            "front": "Front of the card",
+            "back": "Back of the card"
         }
     ]
 }
 `
 
 export async function POST(req) {
-    const openai = OpenAI()
+    const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+    })
     const data = await req.text()
 
     const completion = await openai.chat.completions.create({
