@@ -14,6 +14,7 @@ You are a flashcard creator. Your task is to generate concise and effective flas
 8. Tailor the difficulty level of the flashcards to the user's specified preferences.
 9. If given a body of text, extract the most important and relevant information for the flashcards. 
 10. Aim to create a balanced set of flashcards that covers the topic comprehensively. 
+11. Only generate 10 flashcards at a time.
 
 Remember the goal is to facilitate effective learning and retention of information through these flashcards.
 
@@ -42,10 +43,11 @@ export async function POST(req) {
         model: "gpt-4o",
         response_format: {type : 'json_object'}
     })
+    console.log(completion)
 
     const flashcards = JSON.parse(completion.choices[0].message.content)
 
-    return NextResponse.json(flashcards.flashcard)
+    return NextResponse.json(flashcards.flashcards)
 }
 
 
