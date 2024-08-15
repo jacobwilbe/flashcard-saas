@@ -24,11 +24,11 @@ import {doc, collection, setDoc, getDoc, writeBatch} from 'firebase/firestore'
 import { useUser } from '@clerk/nextjs'
 
 export default function Generate() {
-  const {user} = useUser()
+  const {isSignedIn, user} = useUser()
   const [flashcards, setFlashcards] = useState([])
   const [flipped, setFlipped] = useState(false)
   const [text, setText] = useState('')
-  const [name, setName] = useState('')
+  const [setName, setSetName] = useState('')
   const [open, setOpen] = useState(false)
   const router = useRouter();
 
@@ -41,6 +41,7 @@ export default function Generate() {
       body: text,
     }).then((res) => res.json())
     .then((data) => {
+      console.log(data)
       setFlashcards(data)
     })
 
@@ -56,34 +57,43 @@ export default function Generate() {
   const handleClose = () => setOpen(false)
 
   const saveFlashcards =  async () => { 
-    if (!name) {
+    if (!isSignedIn || !user) {
+        router.push('/sign-in')
+        return
+    }
+    if (!setName) {
         alert('Please enter a name for your flashcard set.')
     }
-    const batch = writeBatch(db)
-    const userDocref = doc(collection(db, 'users'), user.id)
-    const docSnap = await getDoc(userDocref)
+    try {
+      const userDocRef = doc(collection(db, 'users'), user.id)
+      const userDocSnap = await getDoc(userDocRef)
+      const batch = writeBatch(db)
 
-    if (docSnap.exists()) {
-        const collections = docSnap.data().flashcards || []
-        if (collections.find((f) => f.name === name)) {
-            alert('You already have a flashcard set with this name.')
-            return
-        } else {
-            collections.push({name})
-            batch.set(userDocref, {flashcards: collections}, {merge: true})
-        }
-    }else {
-        batch.set(userDocref, {flashcards: [{name}]})
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data()
+        const updatedSets = [...(userData.flashcardSets || []), { name: setName }]
+        batch.update(userDocRef, { flashcardSets: updatedSets })
+      } else {
+        batch.set(userDocRef, { flashcardSets: [{ name: setName }] })
+      }
+  
+      const setDocRef = doc(collection(userDocRef, 'flashcardSets'), setName)
+      batch.set(setDocRef, { flashcards })
+  
+      await batch.commit()
+  
+      alert('Flashcards saved successfully!')
+      handleClose()
+      setSetName('')
+      router.push('/flashcards')
+    } catch (error) {
+      console.error('Error saving flashcards:', error)
+      alert('An error occurred while saving flashcards. Please try again.')
     }
-    const colref = collection(userDocref, name)
-    flashcards.forEach((flashcard) => {
-        const cardDocRef = doc(colref)
-        batch.set(cardDocRef, flashcard)
-    })
-    await batch.commit()
-    handleClose()
-    router.push('/flashcards')
   }
+      
+
+      
 
 
 
@@ -185,7 +195,7 @@ export default function Generate() {
                             </CardActionArea>
                         </Card>
                     </Grid>
-                ))}
+                ))} 
             </Grid>
             <Box sx={{mt: 4, display: 'flex', justifyContent: 'center'}}>
                 <Button variant="contained" color="secondary" onClick={handleOpen}>
@@ -206,8 +216,8 @@ export default function Generate() {
             label="collection Name"
             type="text"
             fullWidth
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={setName}
+            onChange={(e) => setSetName(e.target.value)}
             variant="outlined"
           />
         </DialogContent>

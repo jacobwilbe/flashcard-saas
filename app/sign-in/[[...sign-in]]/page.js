@@ -2,7 +2,7 @@ import { Container, AppBar, Toolbar, Typography, Button, Box } from "@mui/materi
 import Link from "next/link";
 import { SignIn } from "@clerk/nextjs";
 
-export default function SignUpPage() {
+export default function SignInPage() {
     return (
         <Container maxWidth ="100vw">
             <AppBar position="static" >
