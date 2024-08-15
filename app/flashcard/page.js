@@ -19,6 +19,7 @@ export default function Flashcard() {
     useEffect(() => {
         async function getFlashcard() {
             if (!id || !user) return
+            console.log(user.id)
 
             const docRef = doc(collection(doc(collection(db, 'users'), user.id), 'flashcardSets'), id)
             const docSnap = await getDoc(docRef)

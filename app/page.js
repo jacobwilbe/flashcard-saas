@@ -19,7 +19,7 @@ export default function Home(){
       </Head>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant ="h6" style={{flexGrow: 1}}>FlashCard Saas</Typography>
+          <Typography variant ="h6" style={{flexGrow: 1}}>FlashStudy</Typography>
           <SignedOut>
             <Button color="inherit" component={Link} href="/sign-in">
               {' '}
