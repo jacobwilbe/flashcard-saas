@@ -1,14 +1,18 @@
-import { IncomingForm } from 'formidable';
-import { PDFJSLoader } from "langchain/document_loaders/fs/pdf";
-import { ChatOpenAI } from "langchain/chat_models/openai";
-import { RetrievalQA } from "langchain/chains";
-import { HNSWLib } from "langchain/vectorstores/hnswlib";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import formidable from 'formidable';
+import fs from 'fs';
+import pdf from 'pdf-parse';
+import {NextResponse} from 'next/server';
+import OpenAI from 'openai';
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
 
-const prompt = `
-Generate 10 flashcards from the following PDF. 
-Return the flashcards in the following JSON format:
+const systemPrompt = `
+You are a flashcard creator, you take in text created from a PDF and create multiple flashcards from it. Make sure to create exactly 10 flashcards.
+Both front and back should be one sentence long.
+You should return in the following JSON format:
 {
   "flashcards":[
     {
@@ -19,57 +23,47 @@ Return the flashcards in the following JSON format:
 }
 `
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-export default async function handler(req, res) {
+export default async function POST(req) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method Not Allowed' });
+    return NextResponse.json({ error: 'Method not allowed' });
   }
 
-  const form = new IncomingForm();
-
+  const form = new formidable.IncomingForm();
   form.parse(req, async (err, fields, files) => {
     if (err) {
-      return res.status(500).json({ message: 'Error parsing form' });
+      return NextResponse.json({ error: 'Error parsing form data' });
     }
 
     const file = files.pdfFile;
     if (!file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+      return NextResponse.json({ error: 'No file uploaded' });
     }
 
     try {
-      // Load PDF
-      const loader = new PDFJSLoader(file.filepath);
-      const docs = await loader.load();
+        const openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        })
+        const buffer = fs.readFileSync(file.filepath);
+        const data = await pdf(buffer);
+        const text = data.text;
 
-      // Split text into chunks
-      const textSplitter = new RecursiveCharacterTextSplitter({
-        chunkSize: 1000,
-        chunkOverlap: 200,
-      });
-      const splitDocs = await textSplitter.splitDocuments(docs);
+        // Here, you would process the text and generate flashcards
+        // This could involve calling the OpenAI API
 
-      // Create vector store
-      const vectorStore = await HNSWLib.fromDocuments(splitDocs, new OpenAIEmbeddings());
+        const completion = await openai.chat.completions.create({
+            messages : [
+                {role: 'system', content: systemPrompt},
+                {role: 'user', content: text},
+            ],
+            model: "gpt-4o",
+            response_format: {type : 'json_object'}
+        })
 
-      // Create chain
-      const model = new ChatOpenAI({apiKey: process.env.OPENAI_API_KEY, modelName: 'gpt-4'});
-      const chain = RetrievalQA.fromLLM(model, vectorStore.asRetriever());
 
-      // Query the chain
-      const response = await chain.call({
-        query: prompt,
-      });
-
-      res.status(200).json({ response: response.text });
+      const flashcards = JSON.parse(completion.choices[0].message.content)
+      return NextResponse.json(flashcards.flashcards)
     } catch (error) {
-      console.error('Error processing PDF:', error);
-      res.status(500).json({ message: 'Error processing PDF' });
+      return NextResponse.json({ error: 'Error processing PDF' });
     }
   });
 }

@@ -52,11 +52,9 @@ export default function Generate() {
 
 
 
-  const handleSubmit = async () => {
-    
-
+  const handleSubmit = async (e) => {
     if (textType) {
-      fetch('api/generate', {
+      fetch('/api/generate', {
         method: 'POST',
         body: text,
       }).then((res) => res.json())
@@ -65,6 +63,7 @@ export default function Generate() {
         setFlashcards(data)
       })
     } else if (pdfType && pdfFile) {
+      e.preventDefault();
       if (!pdfFile) {
         alert('Please select a file');
         return;
@@ -74,15 +73,14 @@ export default function Generate() {
       formData.append('pdfFile', pdfFile);
   
       try {
-        const res = await fetch('/api/generatePdf', {
+        const response = await fetch('/api/generatePdf', {
           method: 'POST',
           body: formData,
         });
-        const result = await res.json();
-        setResponse(result.response);
+        const data = await response.json();
+        setFlashcards(data)
       } catch (error) {
-        console.error('Error:', error);
-        setResponse('An error occurred during processing.');
+        console.error('Error: this is the error', error);
       }
     }
   }
@@ -142,6 +140,10 @@ export default function Generate() {
     setPdfType(true)
   }
 
+  if (!isSignedIn) {
+    router.push('/sign-in')
+  }
+
 
 
       
@@ -154,7 +156,22 @@ export default function Generate() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
         <Box maxWidth="100%" minWidth="100%">
-        <AppBar position="static">
+        <AppBar position="fixed" elevation={8} sx={{
+            background: 'transparent',
+            boxShadow: 'none',
+            borderBottom: '1px solid',
+            borderColor: 'white',
+            borderRadius: 4,
+            padding: 2,
+            marginBottom: 4,
+            width: '100%',
+            position: 'sticky',
+            backdropFilter: 'blur(10px)',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: 24,
+            fontFamily: 'Arial, sans-serif'
+          }}>
           <Toolbar>
             <Typography variant="h6">FlashStudy</Typography>
             <Box sx={{ flexGrow: 1 }} />

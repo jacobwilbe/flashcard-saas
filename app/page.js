@@ -22,8 +22,21 @@ export default function Home(){
           <title>FlashStudy</title>
           <meta name="description" content="The easiest way to create flashcards from your text." />
         </Head>
-        <AppBar position="static" elevation={8} sx={{
-            background: 'transparent'
+        <AppBar position="fixed" elevation={8} sx={{
+            background: 'transparent',
+            boxShadow: 'none',
+            borderBottom: '1px solid',
+            borderColor: 'white',
+            borderRadius: 4,
+            padding: 2,
+            marginBottom: 4,
+            width: '100%',
+            position: 'sticky',
+            backdropFilter: 'blur(10px)',
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: 24,
+            fontFamily: 'Arial, sans-serif'
           }}>
           <Toolbar>
             <Typography variant ="h6" style={{flexGrow: 1}}>FlashStudy</Typography>
