@@ -27,6 +27,7 @@ import { SignedIn, UserButton, useUser } from '@clerk/nextjs'
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/app/theme';
+import Link from 'next/link';
 
 
 
@@ -175,6 +176,8 @@ export default function Generate() {
           <Toolbar>
             <Typography variant="h6">FlashStudy</Typography>
             <Box sx={{ flexGrow: 1 }} />
+            <Button color="inherit" component={Link} href="/" passHref>Home</Button>
+            <Button color="inherit" component={Link} href="/flashcards" passHref>Flashcards</Button>
             <SignedIn>
               <UserButton />
             </SignedIn>

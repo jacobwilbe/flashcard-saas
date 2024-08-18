@@ -22,7 +22,7 @@ export default function Home(){
           <title>FlashStudy</title>
           <meta name="description" content="The easiest way to create flashcards from your text." />
         </Head>
-        <AppBar position="fixed" elevation={8} sx={{
+        <AppBar position="sticky" elevation={8} sx={{
             background: 'transparent',
             boxShadow: 'none',
             borderBottom: '1px solid',
@@ -143,7 +143,7 @@ export default function Home(){
               </Box>
             </Grid>
           </Grid>
-          <Button variant="contained"  sx={{mt: 6,  borderColor: 'white', border: '1px solid', color: 'white', background: 'black'}} component ={Link} href="/generate/">
+          <Button variant="contained"  sx={{mt: 6,  borderColor: 'white', border: '1px solid', color: 'white', background: 'black', mb: 6}} component ={Link} href="/generate/">
             Get Started
           </Button>
         </Box>
