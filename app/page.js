@@ -29,7 +29,6 @@ export default function Home(){
             borderColor: 'white',
             borderRadius: 4,
             padding: 2,
-            marginBottom: 4,
             width: '100%',
             position: 'sticky',
             backdropFilter: 'blur(10px)',
