@@ -72,29 +72,6 @@ export default function Generate() {
       } catch (error) {
         console.error('Error: this is the error', error);
       }
-    } else if (pdfType && pdfFile) {
-      e.preventDefault();
-      if (!pdfFile) {
-        alert('Please select a file');
-        return;
-      }
-  
-      const formData = new FormData();
-      formData.append('pdfFile', pdfFile);
-  
-      try {
-        fetch('/api/generatePdf', {
-          method: 'POST',
-          body: formData,
-        }).then((res) => res.json())
-        .then((data) => {
-          console.log(data)
-          setFlashcards(data)
-          setLoading(false)
-        })
-      } catch (error) {
-        console.error('Error: this is the error', error);
-      } 
     }
   }
 
