@@ -166,7 +166,7 @@ export default  function Home(){
                 <Typography variant="h6" component="h3" gutterBottom>$5 / month</Typography>
                 <Typography>
                   {' '}
-                  Access to basic card features and limited storage.
+                  Can generate as many flashcards as you want from text, and test yourself as much as you want. Limited Storage.
                 </Typography>
                 <Button onClick={handleSubmitBasic} variant="contained" color="primary" sx={{mt: 2}}>
                   Choose Basic
@@ -187,7 +187,7 @@ export default  function Home(){
                 <Typography variant="h6" component="h3" gutterBottom>$10 / month</Typography>
                 <Typography>
                   {' '}
-                  Access to unlimited flashcards and storage with priority support.
+                  Access to unlimited flashcards and storage with priority support, also access to unlimited flashcards generated from pdf files.
                 </Typography>
                 <Button 
                   variant="contained" 
