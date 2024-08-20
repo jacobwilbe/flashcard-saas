@@ -3,11 +3,7 @@ import fs from 'fs';
 import pdf from 'pdf-parse';
 import {NextResponse} from 'next/server';
 import OpenAI from 'openai';
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+
 
 const systemPrompt = `
 You are a flashcard creator, you take in text created from a PDF and create multiple flashcards from it. Make sure to create exactly 10 flashcards.
