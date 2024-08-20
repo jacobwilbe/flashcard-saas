@@ -1,4 +1,4 @@
-
+'use client';
 
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { AppBar, Box, Button, Toolbar, Typography, Grid, Container } from "@mui/material";
@@ -7,10 +7,63 @@ import Link from "next/link";
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
+import StyleIcon from '@mui/icons-material/Style';
+
+import getStripe from "@/utils/get-stripe";
 
 
 
-export default function Home(){
+export default  function Home(){
+
+  const handleSubmit = async () => {
+    const checkoutSession = await fetch('/api/checkout_sessions', {
+      method: 'POST',
+      headers: {
+        origin: 'http://localhost:3000',
+      },
+    })
+
+    const checkoutSessionJson = await checkoutSession.json();
+
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message)
+      return
+    }
+
+    const stripe = await getStripe()
+    const {error} = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    })
+    if (error) {
+      console.warn(error.message)
+    }
+  }
+
+  const handleSubmitBasic = async () => {
+    const checkoutSession = await fetch('/api/basic_ckeckout', {
+      method: 'POST',
+      headers: {
+        origin: 'http://localhost:3000',
+      },
+    })
+
+    const checkoutSessionJson = await checkoutSession.json();
+
+    if (checkoutSession.statusCode === 500) {
+      console.error(checkoutSession.message)
+      return
+    }
+
+    const stripe = await getStripe()
+    const {error} = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionJson.id,
+    })
+    if (error) {
+      console.warn(error.message)
+    }
+  }
+
+  
 
 
 
@@ -19,7 +72,7 @@ export default function Home(){
       <CssBaseline />
         <Box maxWidth="100vw">
         <Head>
-          <title>FlashStudy</title>
+          <title>FlashStudy </title>
           <meta name="description" content="The easiest way to create flashcards from your text." />
         </Head>
         <AppBar position="sticky" elevation={8} sx={{
@@ -30,7 +83,6 @@ export default function Home(){
             borderRadius: 4,
             padding: 2,
             width: '100%',
-            position: 'sticky',
             backdropFilter: 'blur(10px)',
             color: 'white',
             fontWeight: 'bold',
@@ -38,7 +90,8 @@ export default function Home(){
             fontFamily: 'Arial, sans-serif'
           }}>
           <Toolbar>
-            <Typography variant ="h6" style={{flexGrow: 1}}>FlashStudy</Typography>
+            <Typography variant ="h6" style={{flexGrow: 1}}><StyleIcon/>FlashStudy</Typography>
+            
             <SignedOut>
               <Button color="inherit" component={Link} href="/sign-in">
                 {' '}
@@ -53,12 +106,12 @@ export default function Home(){
             </SignedIn>
           </Toolbar>
         </AppBar>
-        <Box sx={{textAlign: 'center', my: 6, padding: 2, borderRadius: 4, color: 'white' }}>
+        <Box sx={{textAlign: 'center', my: 6, padding: 2, borderRadius: 4, color: 'white'  }}>
           <Typography variant= "h2" component="h1" gutterBottom>
             Welcome to FlashStudy
           </Typography>
           <Typography variant ="h5" component="h2" gutterBottom>
-            The easiest way to create flashcards from your text and pdfs.
+            The easiest way to create flashcards from your text and PDF files.
           </Typography>
         </Box>
         <Box sx={{my: 3, padding: 2, textAlign: 'center'}}>
@@ -69,7 +122,7 @@ export default function Home(){
                 <Typography variant="h6" component="h3" gutterBottom>Easy Text to Flashcards</Typography>
                 <Typography>
                   {' '}
-                  Simply copy and paste your text into the app and we will generate flashcards for you.
+                  Simply copy and paste your text or upload a pdf file into the app and we will generate flashcards for you.
                 </Typography>
               </Box>
             </Grid>
@@ -115,7 +168,7 @@ export default function Home(){
                   {' '}
                   Access to basic card features and limited storage.
                 </Typography>
-                <Button variant="contained" color="primary" sx={{mt: 2}}>
+                <Button onClick={handleSubmitBasic} variant="contained" color="primary" sx={{mt: 2}}>
                   Choose Basic
                 </Button>
               </Box>
@@ -136,7 +189,12 @@ export default function Home(){
                   {' '}
                   Access to unlimited flashcards and storage with priority support.
                 </Typography>
-                <Button variant="contained" color="primary" sx={{mt: 2}}>
+                <Button 
+                  variant="contained" 
+                  color="primary"  
+                  sx={{mt: 2}}
+                  onClick={handleSubmit}
+                  >
                   Choose Pro
                 </Button>
               </Box>

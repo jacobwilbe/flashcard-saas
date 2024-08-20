@@ -139,7 +139,7 @@ export default function Flashcard() {
                     fontFamily: 'Arial, sans-serif'
                 }}>
                     <Toolbar>
-                        <Typography variant="h6">FlashStudy</Typography>
+                        <Typography  variant="h6">FlashStudy</Typography>
                         <Box sx={{ flexGrow: 1 }} />
                         <Button color="inherit" component={Link} href="/generate" passHref>Generate</Button>
                         <Button color="inherit" component={Link} href="/flashcards" passHref>Flashcards</Button>

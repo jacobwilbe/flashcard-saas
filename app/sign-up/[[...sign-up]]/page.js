@@ -30,7 +30,7 @@ export default function SignUpPage() {
                     }}>
                         <Toolbar>
                             <Typography variant="h6" component="h1">
-                                Flashcard SaaS
+                                FlashStudy
                             </Typography>
                             <Box sx={{ flexGrow: 1 }} />
                             <Button color="inherit" component={Link} href="/" passHref>

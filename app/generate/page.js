@@ -19,6 +19,8 @@ import {
   CardActionArea,
   AppBar,
   Toolbar,
+  CardHeader,
+  CircularProgress,
 } from '@mui/material'
 import { useRouter } from 'next/navigation'
 import {db} from '@/firebase'
@@ -28,6 +30,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '@/app/theme';
 import Link from 'next/link';
+import StyleIcon from '@mui/icons-material/Style';
 
 
 
@@ -42,6 +45,7 @@ export default function Generate() {
   const [textType, setTextType] = useState(true)
   const [pdfType, setPdfType] = useState(false)
   const [pdfFile, setPdfFile] = useState(null)
+  const [loading,setLoading] = useState(false)
 
 
   const handleFileChange = (event) => {
@@ -55,14 +59,19 @@ export default function Generate() {
 
   const handleSubmit = async (e) => {
     if (textType) {
-      fetch('/api/generate', {
-        method: 'POST',
-        body: text,
-      }).then((res) => res.json())
-      .then((data) => {
-        console.log(data)
-        setFlashcards(data)
-      })
+      try {
+        fetch('/api/generate', {
+          method: 'POST',
+          body: text,
+        }).then((res) => res.json())
+        .then((data) => {
+          console.log(data)
+          setFlashcards(data)
+          setLoading(false)
+        })
+      } catch (error) {
+        console.error('Error: this is the error', error);
+      }
     } else if (pdfType && pdfFile) {
       e.preventDefault();
       if (!pdfFile) {
@@ -74,15 +83,18 @@ export default function Generate() {
       formData.append('pdfFile', pdfFile);
   
       try {
-        const response = await fetch('/api/generatePdf', {
+        fetch('/api/generatePdf', {
           method: 'POST',
           body: formData,
-        });
-        const data = await response.json();
-        setFlashcards(data)
+        }).then((res) => res.json())
+        .then((data) => {
+          console.log(data)
+          setFlashcards(data)
+          setLoading(false)
+        })
       } catch (error) {
         console.error('Error: this is the error', error);
-      }
+      } 
     }
   }
 
@@ -147,12 +159,6 @@ export default function Generate() {
 
 
 
-      
-
-
-
-  
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -174,7 +180,7 @@ export default function Generate() {
             fontFamily: 'Arial, sans-serif'
           }}>
           <Toolbar>
-            <Typography variant="h6">FlashStudy</Typography>
+            <Typography variant="h6"><StyleIcon/>FlashStudy</Typography>
             <Box sx={{ flexGrow: 1 }} />
             <Button color="inherit" component={Link} href="/" passHref>Home</Button>
             <Button color="inherit" component={Link} href="/flashcards" passHref>Flashcards</Button>
@@ -196,10 +202,10 @@ export default function Generate() {
             <Typography variant="h4" component="h1" gutterBottom>
               Generate Flashcards
             </Typography>
-            <Paper sx={{p: 4, width: '100%'}}>
+            <Paper sx={{p: 4, width: '100%', backgroundColor: 'transparent', border: '1px solid white', borderRadius: 4}}>
                 <Box sx={{display: 'flex', justifyContent: 'center', gap: 2, marginBottom: 2}}>
-                  <Button variant="contained" color="primary" onClick={textOn}>Text</Button>
-                  <Button variant="contained" color="primary" onClick={pdfOn}>PDF</Button>
+                  <Button variant="contained" sx={{borderColor: 'white', color: 'white', borderRadius: 4, border: '1px solid white', backgroundColor: textType ? 'primary.main' : 'transparent'}} onClick={textOn}>Text</Button>
+                  <Button variant="contained" sx={{borderColor: 'white', color: 'white', borderRadius: 4, border: '1px solid white', backgroundColor: pdfType ? 'primary.main' : 'transparent'}} onClick={pdfOn}>PDF</Button>
                 </Box>
                 {textType && (
                   <>
@@ -215,9 +221,12 @@ export default function Generate() {
                     />
                     <Button
                       variant="contained"
-                      color="primary"
-                      onClick={handleSubmit}
+                      onClick={() => {
+                        handleSubmit() 
+                        setLoading(true)
+                      }}
                       fullWidth
+                      sx={{ backgroundColor: 'transparent', border: '1px solid white', borderRadius: 4 }}
                     >
                       Generate Flashcards
                     </Button>
@@ -233,11 +242,13 @@ export default function Generate() {
                     {pdfFile && <p>Selected file: {pdfFile.name}</p>}
                     <Button
                       variant="contained"
-                      color="primary"
-                      onClick={handleSubmit}
+                      onClick={(e) => {
+                        handleSubmit(e)
+                        setLoading(true)
+                      }}
                       fullWidth
                       disabled={!pdfFile}
-                      sx={{ mt: 2 }}
+                      sx={{ mt: 2, backgroundColor: 'transparent', border: '1px solid white', borderRadius: 4 }}
                     >
                       Generate Flashcards
                     </Button>
@@ -245,6 +256,11 @@ export default function Generate() {
                 )}
             </Paper>
           </Box>
+          {loading && (
+            <Container maxWidth = "100vw" sx={{textAlign: 'center', mt: 4}}>
+                <CircularProgress />
+            </Container>
+          )}
           
           {flashcards.length > 0 && (
             <Box sx={{ mt: 4 }}>
@@ -254,7 +270,22 @@ export default function Generate() {
                 <Grid container spacing={3}>
                     {flashcards.map((flashcard, index) => (
                         <Grid item xs={12} sm={6} md={4} key={index}>
-                            <Card>
+                            <Card
+                              sx={{
+                                backgroundColor: 'white',
+                                color: 'black',
+                                height: '100%',
+                                width: '100%',
+                              
+                              }}
+                            >
+                              <CardHeader 
+                                title={index + 1 + "."} 
+                                sx={{
+                                    backgroundColor: 'white',
+                                    color: 'black',
+                                }}
+                              />
                                 <CardActionArea
                                     onClick={() => {
                                         handleCardClick(index)
@@ -269,7 +300,7 @@ export default function Generate() {
                                                     transformStyle: 'preserve-3d',
                                                     position: 'relative',
                                                     width: '100%',
-                                                    height: '200px',
+                                                    height: '400px',
                                                     boxShadow: '0 4px 8px 0 rgba(0,0,0, 0.2)',
                                                     transform: flipped[index] ? 'rotateY(180deg)' : 'rotateY(0deg)',
                                                 },
@@ -289,7 +320,7 @@ export default function Generate() {
                                                 },
                                             }}
                                         >
-                                            <div>
+                                            <div >
                                                 <div>
                                                     <Typography variant="h5" component="div">
                                                         {flashcard.front}
@@ -308,7 +339,7 @@ export default function Generate() {
                         </Grid>
                     ))} 
                 </Grid>
-                <Box sx={{mt: 4, display: 'flex', justifyContent: 'center'}}>
+                <Box sx={{mt: 4, display: 'flex', justifyContent: 'center', mb: 4}}>
                     <Button variant="contained" color="secondary" onClick={handleOpen}>
                         Save Flashcards
                     </Button>
