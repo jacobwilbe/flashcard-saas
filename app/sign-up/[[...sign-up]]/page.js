@@ -1,59 +1,33 @@
-import { Container, AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
-import Link from "next/link";
 import { SignUp } from "@clerk/nextjs";
-
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '@/app/theme';
+import Link from "next/link";
 
 export default function SignUpPage() {
-    return (
+  return (
+    <div className="min-h-screen bg-gray-900 text-white">
+      {/* AppBar */}
+      <header className="bg-transparent border-b border-white/20 backdrop-blur-md sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <h1 className="text-xl font-bold">FlashStudy</h1>
+            <div className="flex space-x-4">
+              <Link href="/" className="text-white hover:text-gray-300">
+                Home
+              </Link>
+              <Link href="/sign-in" className="text-white hover:text-gray-300">
+                Login
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
 
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-                <Box maxWidth ="100vw">
-                    <AppBar position="sticky" elevation={8} sx={{
-                        background: 'transparent',
-                        boxShadow: 'none',
-                        borderBottom: '1px solid',
-                        borderColor: 'white',
-                        borderRadius: 4,
-                        width: '100%',
-                        position: 'sticky',
-                        backdropFilter: 'blur(10px)',
-                        color: 'white',
-                        fontWeight: 'bold',
-                        fontSize: 24,
-                        fontFamily: 'Arial, sans-serif',
-                        padding: 2,
-                        margin: 0,
-                    }}>
-                        <Toolbar>
-                            <Typography variant="h6" component="h1">
-                                FlashStudy
-                            </Typography>
-                            <Box sx={{ flexGrow: 1 }} />
-                            <Button color="inherit" component={Link} href="/" passHref>
-                                    Home
-                            </Button>
-                            <Button color="inherit" component={Link} href="/sign-in" passHref>
-                                    Login
-                            </Button>
-                        </Toolbar>
-                    </AppBar>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                        minHeight="calc(100vh - 150px)"
-                    >
-                        <Typography variant="h4" component="h1" marginBottom={2}>
-                            Sign Up
-                        </Typography>
-                        <SignUp/>
-                    </Box>
-            </Box>
-        </ThemeProvider>
-    )
+      {/* Sign Up Section */}
+      <main className="flex flex-col items-center justify-center min-h-[calc(100vh-150px)] px-4">
+        <h2 className="text-4xl font-bold mb-8">Sign Up</h2>
+        <div className="w-full max-w-md">
+          <SignUp />
+        </div>
+      </main>
+    </div>
+  );
 }
