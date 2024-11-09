@@ -51,16 +51,32 @@ export default function Generate() {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
-  const saveFlashcards = async () => {
+  const saveFlashcards =  async () => { 
     if (!isSignedIn || !user) {
-      router.push('/sign-in')
-      return
+        router.push('/sign-in')
+        return
     }
     if (!setName) {
-      alert('Please enter a name for your flashcard set.')
+        alert('Please enter a name for your flashcard set.')
     }
     try {
-      // Firebase logic to save flashcards
+      const userDocRef = doc(collection(db, 'users'), user.id)
+      const userDocSnap = await getDoc(userDocRef)
+      const batch = writeBatch(db)
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data()
+        const updatedSets = [...(userData.flashcardSets || []), { name: setName }]
+        batch.update(userDocRef, { flashcardSets: updatedSets })
+      } else {
+        batch.set(userDocRef, { flashcardSets: [{ name: setName}] })
+      }
+  
+      const setDocRef = doc(collection(userDocRef, 'flashcardSets'), setName)
+      batch.set(setDocRef, { flashcards })
+  
+      await batch.commit()
+  
       alert('Flashcards saved successfully!')
       handleClose()
       setSetName('')
