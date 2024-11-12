@@ -109,7 +109,7 @@ export default function Home() {
           <div id="home" className="bg-white">
             <header className="absolute inset-x-0 top-0 z-50 sticky">
               <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
-                <div className="flex lg:flex-1">
+                <div className="flex lg:flex-1 md:flex md:flex-1 sm:flex sm:flex-1">
                   <a href="#" className="-m-1.5 p-1.5">
                     <span className="sr-only">FlashStudy</span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -117,14 +117,14 @@ export default function Home() {
                     </svg>  
                   </a>
                 </div>
-                <div className="hidden lg:flex lg:gap-x-12">
+                <div className="flex lg:gap-x-12 md:gap-x-6 gap-x-6">
                   {navigation.map((item) => (
                     <a key={item.name} href={item.href} className="text-sm/6 font-semibold text-gray-900">
                       {item.name}
                     </a>
                   ))}
                 </div>
-                <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+                <div className="lg:flex lg:flex-1 lg:justify-end md:flex md:flex-1 md:justify-end sm:flex sm:flex-1 sm:justify-end">
                   <SignedOut>
                     <Link href="/sign-in" className="text-sm/6 font-semibold text-gray-900">
                       Log in <span aria-hidden="true">&rarr;</span>
