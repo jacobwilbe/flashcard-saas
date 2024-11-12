@@ -18,6 +18,7 @@ const ResultPage = () => {
             try {
                 const res = await fetch(`/api/checkout_sessions?session_id=${session_id}`)
                 const sessionData = await res.json()
+                console.log(sessionData)
                 if (res.ok) {
                     setSession(sessionData)
                 } else {
