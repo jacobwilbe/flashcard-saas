@@ -145,22 +145,22 @@ export default function Home() {
                     <div className="-my-6 divide-y divide-gray-500/10">
                       <div className="space-y-2 py-6">
                         {navigation.map((item) => (
-                          <a
+                          <Link
                             key={item.name}
                             href={item.href}
                             className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                           >
                             {item.name}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                       <div className="py-6">
-                        <a
+                        <Link
                           href="#"
                           className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
                         >
                           Log in
-                        </a>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -191,21 +191,21 @@ export default function Home() {
                   </p>
                   <div className="mt-10 flex items-center justify-center gap-x-6">
                     <SignedOut>
-                      <a
-                        href="/sign-in"
-                      className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
+                      <Link
+                        href="/generate"
+                        className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                      >
                         Get started
-                      </a>
+                      </Link>
                     </SignedOut>
                     <SignedIn>
-                      <a href="/flashcards" className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      <Link href="/flashcards" className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                         Dashboard
-                      </a>
+                      </Link>
                     </SignedIn>
-                    <a href="#features" className="text-sm/6 font-semibold text-gray-900">
+                    <Link href="#features" className="text-sm/6 font-semibold text-gray-900">
                       Learn more <span aria-hidden="true">→</span>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -329,7 +329,7 @@ export default function Home() {
                         </li>
                       ))}
                     </ul>
-                    <a
+                    <button
                       onClick={tier.id === 'tier-free' ? handleSubmitBasic : handleSubmit}
                       aria-describedby={tier.id}
                       className={classNames(
@@ -340,7 +340,7 @@ export default function Home() {
                       )}
                     >
                       Get started today
-                    </a>
+                    </button>
                   </div>
                 ))}
               </div>

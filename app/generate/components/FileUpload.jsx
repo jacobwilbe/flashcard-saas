@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from 'react';
 
-export default function FileUpload({ onFileSelect, isLoading }) {
+export default function FileUpload({ file, setFile, onFileSelect, isLoading }) {
+
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
+    setFile(file);
     if (file && file.type === "application/pdf") {
       onFileSelect(file);
     } else {
@@ -17,6 +18,7 @@ export default function FileUpload({ onFileSelect, isLoading }) {
       <input
         type="file"
         accept=".pdf"
+        name="pdfFile"
         onChange={handleFileChange}
         className="hidden"
         id="pdf-upload"
