@@ -13,7 +13,7 @@ export default function Flashcards() {
 
   useEffect(() => {
     async function getFlashcards() {
-      if (!user) return
+      if (!user?.id) return
       const docRef = doc(collection(db, 'users'), user.id)
       const docSnap = await getDoc(docRef)
       if (docSnap.exists()) {
@@ -25,7 +25,7 @@ export default function Flashcards() {
       }
     }
     getFlashcards()
-  }, [user])
+  }, [user?.id])
 
   if (!isLoaded || !isSignedIn) {
     return <></>

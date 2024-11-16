@@ -30,7 +30,9 @@ export async function POST(req) {
   try {
     // Parse the uploaded file using formidable
     const data = await req.formData();
+    console.log(data);
     const file = data.get('pdfFile');
+    console.log(file);
 
     if (!file || !file.type.includes('pdf')) {
       return NextResponse.json({ error: 'Invalid or missing PDF file' });
@@ -56,7 +58,7 @@ export async function POST(req) {
             { role: 'system', content: systemPrompt },
             { role: 'user', content: extractedText },
         ],
-        model: 'gpt-4',
+        model: 'gpt-4o',
         response_format: {type : 'json_object'},
         });
         console.log(completion);

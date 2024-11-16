@@ -10,6 +10,7 @@ import { db } from '@/firebase';
 import TextInput from "./components/TextInput";
 import FileUpload from "./components/FileUpload";
 import FlashcardList from "./components/FlashcardList";
+import { signInWithClerk } from '@/firebase';
 
 export default function Generate() {
 
@@ -69,7 +70,7 @@ export default function Generate() {
     try {
       const formData = new FormData();
       formData.append('pdfFile', file);
-      const response = await fetch('/api/generatePDF', {
+      const response = await fetch('/api/pdfUpload', {
         method: 'POST',
         body: formData,
       });
@@ -121,20 +122,26 @@ export default function Generate() {
       alert('Please enter a name for your flashcard set.');
     }
     try {
+      await signInWithClerk();
       const userDocRef = doc(collection(db, 'users'), user.id);
       const userDocSnap = await getDoc(userDocRef);
       const batch = writeBatch(db);
+      const newSet = {
+        name: setName,
+        createdAt: new Date().toISOString(),
+        id: setName.toLowerCase().replace(/\s+/g, '-')
+      };
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        const updatedSets = [...(userData.flashcardSets || []), { name: setName }];
+        const updatedSets = [...(userData.flashcardSets || []), newSet];
         batch.update(userDocRef, { flashcardSets: updatedSets });
       } else {
-        batch.set(userDocRef, { flashcardSets: [{ name: setName }] });
+        batch.set(userDocRef, { flashcardSets: [newSet] });
       }
 
-      const setDocRef = doc(collection(userDocRef, 'flashcardSets'), setName);
-      batch.set(setDocRef, { flashcards });
+      const setDocRef = doc(collection(userDocRef, 'flashcardSets'), newSet.id);
+      batch.set(setDocRef, { flashcards, name: setName, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
 
       await batch.commit();
 

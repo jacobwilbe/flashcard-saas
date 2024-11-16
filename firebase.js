@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
-import { getAuth} from 'firebase/auth'
+import { getAuth, signInWithCustomToken } from 'firebase/auth'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -20,4 +20,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app)
+
+export async function signInWithClerk() {
+  try {
+    const response = await fetch('/api/auth/firebase-token');
+    const { token } = await response.json();
+    await signInWithCustomToken(auth, token);
+  } catch (error) {
+    console.error('Error signing in with Clerk:', error);
+  }
+}
+
 export {db, auth};
