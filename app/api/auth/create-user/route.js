@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { db } from '@/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
