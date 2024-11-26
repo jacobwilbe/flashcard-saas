@@ -1,76 +1,85 @@
-'use client'
-import { SignedIn, UserButton, useUser } from '@clerk/nextjs'
-import { useRouter } from 'next/navigation'
-import { doc, getDoc, setDoc, collection } from 'firebase/firestore'
-import { db } from '@/firebase'
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { SignedIn, useUser } from '@clerk/nextjs';
+import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
+import { db } from '@/firebase';
+import { DashboardLayout } from './components/dashboardLayout';
+import { Header } from './components/header';
+import { FlashcardGrid } from './components/flashcardGrid';
+import { Plus } from 'lucide-react';
 
 export default function Flashcards() {
-  const { isLoaded, isSignedIn, user } = useUser()
-  const [flashcards, setFlashcards] = useState([])
-  const router = useRouter()
+  const { isLoaded, isSignedIn, user } = useUser();
+  const [flashcards, setFlashcards] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     async function getFlashcards() {
-      if (!user?.id) return
-      const docRef = doc(collection(db, 'users'), user.id)
-      const docSnap = await getDoc(docRef)
+      if (!user?.id) return;
+      const docRef = doc(collection(db, 'users'), user.id);
+      const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        const collections = docSnap.data().flashcardSets || []
-        console.log(collections)
-        setFlashcards(collections)
+        const collections = docSnap.data().flashcardSets || [];
+        setFlashcards(collections);
       } else {
-        await setDoc(docRef, { flashcardSets: [] })
+        await setDoc(docRef, { flashcardSets: [] });
       }
     }
-    getFlashcards()
-  }, [user?.id])
+    getFlashcards();
+  }, [user?.id]);
 
   if (!isLoaded || !isSignedIn) {
-    return <></>
+    return null;
   }
 
   const handleCardClick = (name) => {
-    router.push(`/flashcard?id=${name}`)
-  }
+    router.push(`/flashcard?id=${name}`);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      {/* AppBar */}
-      <header className="bg-transparent border-b border-white/20 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <h1 className="text-xl font-bold">FlashStudy</h1>
-            <div className="flex space-x-4">
-              <Link href="/generate" className="text-white hover:text-gray-300">
-                Generate
-              </Link>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </div>
+    <DashboardLayout>
+      <Header />
+      
+      <div className="p-6">
+        {/* Page Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold text-white">Your Flashcards</h2>
+            <p className="mt-1 text-white/60">
+              Manage and study your flashcard collections
+            </p>
+          </div>
+          
+          <button
+            onClick={() => router.push('/generate')}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors duration-200"
+          >
+            <Plus className="w-5 h-5" />
+            Create New Set
+          </button>
+        </div>
+
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
+            <h4 className="text-white/60 text-sm font-medium">Total Sets</h4>
+            <p className="text-2xl font-bold text-white mt-1">{flashcards.length}</p>
+          </div>
+          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
+            <h4 className="text-white/60 text-sm font-medium">Cards Mastered</h4>
+            <p className="text-2xl font-bold text-white mt-1">0</p>
+          </div>
+          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
+            <h4 className="text-white/60 text-sm font-medium">Study Streak</h4>
+            <p className="text-2xl font-bold text-white mt-1">0 days</p>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-bold">Your Flashcards</h2>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {flashcards.map((flashcard, index) => (
-            <div
-              key={index}
-              className="bg-white text-black p-4 rounded-lg shadow-lg cursor-pointer"
-              onClick={() => handleCardClick(flashcard.name)}
-            >
-              <h3 className="text-lg font-bold">{flashcard.name}</h3>
-            </div>
-          ))}
-        </div>
-      </main>
-    </div>
-  )
+        {/* Flashcard Grid */}
+        <FlashcardGrid flashcards={flashcards} onCardClick={handleCardClick} />
+      </div>
+    </DashboardLayout>
+  );
 }

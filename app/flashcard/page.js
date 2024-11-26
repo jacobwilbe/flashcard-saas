@@ -47,6 +47,7 @@ export default function Flashcard() {
   };
 
   useKeyboardNavigation({
+    testMode,
     goToNext,
     goToPrevious,
     handleFlip: () => handleFlip(currentIndex)
