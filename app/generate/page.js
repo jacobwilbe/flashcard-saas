@@ -70,11 +70,10 @@ export default function Generate() {
     try {
       const formData = new FormData();
       formData.append('pdfFile', file);
-      const response = await fetch('/api/pdfUpload', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
-      console.log(response);
 
       const data = await response.json();
 
@@ -129,7 +128,7 @@ export default function Generate() {
       const newSet = {
         name: setName,
         createdAt: new Date().toISOString(),
-        id: setName.toLowerCase().replace(/\s+/g, '-')
+        id: setName
       };
 
       if (userDocSnap.exists()) {

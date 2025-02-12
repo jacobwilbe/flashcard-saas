@@ -1,10 +1,6 @@
-// Required dependencies
 import {NextResponse} from 'next/server';
-const pdfParse = require('pdf-parse');
+import pdfParse from 'pdf-parse';
 import { OpenAI } from 'openai';
-
-
-
 
 const systemPrompt = `
 You are a flashcard creator specializing in creating educational flashcards from provided text. Your task is to generate **exactly 10 flashcards** that summarize key concepts, facts, or definitions from the text. Each flashcard should follow these guidelines:
@@ -13,6 +9,7 @@ You are a flashcard creator specializing in creating educational flashcards from
 2. **Back**: Write a clear, single-sentence answer or explanation for the front of the card.
 3. Focus on creating flashcards that are useful for understanding and remembering the core information from the text.
 4. Avoid redundancy—each card should cover a unique concept or detail.
+5. Ensure you only return a valid JSON object and nothing else.
 
 Return the flashcards in the following JSON format:
 {
@@ -26,13 +23,11 @@ Return the flashcards in the following JSON format:
   `
 
 export async function POST(req) {
+  console.log("Request received");
 
   try {
-    // Parse the uploaded file using formidable
     const data = await req.formData();
-    console.log(data);
     const file = data.get('pdfFile');
-    console.log(file);
 
     if (!file || !file.type.includes('pdf')) {
       return NextResponse.json({ error: 'Invalid or missing PDF file' });
@@ -41,16 +36,13 @@ export async function POST(req) {
     // Read and parse the PDF
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    console.log(buffer);
     const pdfData = await pdfParse(buffer);
     const extractedText = pdfData.text;
     if (!extractedText || extractedText.trim().length === 0) {
         console.error('No text extracted from PDF');
         return NextResponse.json({ error: 'No text could be extracted from the PDF' }, { status: 400 });
     }
-    console.log(extractedText);
 
-    // Call OpenAI API with extracted text
     try {
         const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
         const completion = await openai.chat.completions.create({
@@ -61,10 +53,7 @@ export async function POST(req) {
         model: 'gpt-4o',
         response_format: {type : 'json_object'},
         });
-        console.log(completion);
-        // Parse and return the flashcards
         const flashcards = JSON.parse(completion.choices[0].message.content);
-        console.log(flashcards);
         return NextResponse.json(flashcards.flashcards);
     } catch (openaiError) {
         console.error('OpenAI API error:', openaiError);

@@ -73,7 +73,7 @@ export default function Flashcards() {
           </div>
           <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-6">
             <h4 className="text-white/60 text-sm font-medium">Study Streak</h4>
-            <p className="text-2xl font-bold text-white mt-1">0 days</p>
+            <p className="text-2xl font-bold text-white mt-1">1 day</p>
           </div>
         </div>
 
